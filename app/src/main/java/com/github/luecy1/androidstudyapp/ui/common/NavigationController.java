@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 
 import com.github.luecy1.androidstudyapp.MainActivity;
 import com.github.luecy1.androidstudyapp.R;
+import com.github.luecy1.androidstudyapp.SearchFragment;
 
 import javax.inject.Inject;
 
@@ -23,7 +24,10 @@ public class NavigationController {
     }
 
     public void navigateToSearch() {
-//        S
+        SearchFragment searchFragment = new SearchFragment();
+        fragmentManager.beginTransaction()
+                .replace(containerId, searchFragment)
+                .commitAllowingStateLoss();
     }
 
     public void navigateToRepo(String owner, String name) {
