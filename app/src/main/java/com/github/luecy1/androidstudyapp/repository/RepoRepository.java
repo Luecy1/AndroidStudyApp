@@ -18,4 +18,9 @@ public class RepoRepository {
         // TODO
         return null;
     }
+
+    public LiveData<Resource<Repo>> search(String query) {
+        // TODO
+        return null;
+    }
 }

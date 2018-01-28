@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements HasSupportFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
-//            navigationController.na
+            navigationController.navigateToSearch();
         }
     }
 
