@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 
 import com.github.luecy1.androidstudyapp.MainActivity;
 import com.github.luecy1.androidstudyapp.R;
-import com.github.luecy1.androidstudyapp.SearchFragment;
+import com.github.luecy1.androidstudyapp.ui.search.SearchFragment;
 
 import javax.inject.Inject;
 

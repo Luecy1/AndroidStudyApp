@@ -1,9 +1,9 @@
-package com.github.luecy1.androidstudyapp;
+package com.github.luecy1.androidstudyapp.ui.search;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
-import android.databinding.DataBindingUtil;
 import android.databinding.DataBindingComponent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,16 +11,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.github.luecy1.androidstudyapp.R;
 import com.github.luecy1.androidstudyapp.binding.FragmentDataBindingComponent;
 import com.github.luecy1.androidstudyapp.databinding.FragmentSearchBinding;
+import com.github.luecy1.androidstudyapp.di.Injectible;
 import com.github.luecy1.androidstudyapp.ui.common.NavigationController;
-import com.github.luecy1.androidstudyapp.ui.search.SearchViewModel;
 import com.github.luecy1.androidstudyapp.util.AutoClearedValue;
 
 import javax.inject.Inject;
 
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements Injectible {
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
@@ -41,7 +42,7 @@ public class SearchFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         FragmentSearchBinding dataBinding =  DataBindingUtil
                 .inflate(inflater, R.layout.fragment_search, container, false,
-                dataBindingComponent);
+                        dataBindingComponent);
 
         binding = new AutoClearedValue<>(this, dataBinding);
         return dataBinding.getRoot();
