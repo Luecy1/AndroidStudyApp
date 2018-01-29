@@ -13,6 +13,7 @@ public class AppInjector {
     private AppInjector() {}
 
     public static void init(GithubApp githubApp) {
+
     }
 
     private static void handleActivity(Activity activity) {

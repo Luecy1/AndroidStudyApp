@@ -1,9 +1,11 @@
 package com.github.luecy1.androidstudyapp.di;
 
 import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 
 import com.github.luecy1.androidstudyapp.ui.repo.RepoViewModel;
 import com.github.luecy1.androidstudyapp.ui.search.SearchViewModel;
+import com.github.luecy1.androidstudyapp.viewmodel.GithubViewModelFactory;
 
 import dagger.Binds;
 import dagger.Module;
@@ -25,4 +27,6 @@ public abstract class ViewModelModule {
     @ViewModelKey(RepoViewModel.class)
     abstract ViewModel bindRepoViewModel(RepoViewModel repoViewModel);
 
+    @Binds
+    abstract ViewModelProvider.Factory bindViewModelFactory(GithubViewModelFactory factory);
 }
