@@ -2,6 +2,7 @@ package com.github.luecy1.androidstudyapp.viewmodel;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
+import android.util.Log;
 
 import java.util.Map;
 
@@ -44,6 +45,7 @@ public class GithubViewModelFactory implements ViewModelProvider.Factory {
         try {
             return  (T) creator.get();
         } catch (Exception e) {
+            Log.e("GithubApp", "stacktrace", e);
             throw new RuntimeException();
         }
     }
