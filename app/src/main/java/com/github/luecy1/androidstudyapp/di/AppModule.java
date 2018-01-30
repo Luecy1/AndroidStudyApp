@@ -1,7 +1,13 @@
 package com.github.luecy1.androidstudyapp.di;
 
 
+import android.app.Application;
+import android.arch.persistence.room.Room;
+
 import com.github.luecy1.androidstudyapp.api.GithubService;
+import com.github.luecy1.androidstudyapp.db.GithubDb;
+import com.github.luecy1.androidstudyapp.db.RepoDao;
+import com.github.luecy1.androidstudyapp.db.UserDao;
 
 import javax.inject.Singleton;
 
@@ -28,4 +34,21 @@ public class AppModule {
                 .create(GithubService.class);
     }
 
+    @Singleton
+    @Provides
+    GithubDb provideDb(Application app) {
+        return Room.databaseBuilder(app, GithubDb.class, "github.db").build();
+    }
+
+    @Singleton
+    @Provides
+    UserDao provideUserDao(GithubDb db) {
+        return db.userDao();
+    }
+
+    @Singleton
+    @Provides
+    RepoDao provideRepoDao(GithubDb db) {
+        return db.repoDao();
+    }
 }
