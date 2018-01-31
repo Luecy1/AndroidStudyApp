@@ -1,14 +1,24 @@
 package com.github.luecy1.androidstudyapp.vo;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by you on 2018/01/28.
  */
-
+@Entity(primaryKeys = {"repoName", "repoOwner", "login"},
+        foreignKeys = @ForeignKey(entity = Repo.class,
+        parentColumns = {"name", "owner_login"},
+        childColumns = {"repoName", "repoOwner"},
+        onUpdate = ForeignKey.CASCADE,
+        deferred = true))
 public class Contributor {
 
     @SerializedName("login")
+    @NonNull
     private final String login;
 
     @SerializedName("contributions")
@@ -17,8 +27,10 @@ public class Contributor {
     @SerializedName("avatar_url")
     private final String avatarUrl;
 
+    @NonNull
     private String repoName;
 
+    @NonNull
     private String repoOwner;
 
     public Contributor(String login, int contributions, String avatarUrl) {

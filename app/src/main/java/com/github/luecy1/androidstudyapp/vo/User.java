@@ -1,6 +1,7 @@
 package com.github.luecy1.androidstudyapp.vo;
 
 import android.arch.persistence.room.Entity;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -12,6 +13,7 @@ import com.google.gson.annotations.SerializedName;
 public class User {
 
     @SerializedName("login")
+    @NonNull
     public final String login;
 
     @SerializedName("avater_url")
