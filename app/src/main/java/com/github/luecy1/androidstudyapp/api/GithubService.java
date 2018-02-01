@@ -8,8 +8,10 @@ import com.github.luecy1.androidstudyapp.vo.User;
 
 import java.util.List;
 
+import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by you on 2018/01/29.
@@ -28,7 +30,9 @@ public interface GithubService {
     @GET("repos/{owner}/{name}/contributors")
     LiveData<ApiResponse<List<Contributor>>> getContributors(@Path("owner") String owner, @Path("name") String name);
 
-//    @GET("search/repositories")
-//    LiveData<ApiResponse<>>
-    // TODO
+    @GET("search/repositories")
+    LiveData<ApiResponse<RepoSearchResponse>> searchRepos(@Query("q") String query);
+
+    @GET("search/repositories")
+    Call<RepoSearchResponse> searchRepos(@Query("q") String query, @Query("page") int page);
 }
