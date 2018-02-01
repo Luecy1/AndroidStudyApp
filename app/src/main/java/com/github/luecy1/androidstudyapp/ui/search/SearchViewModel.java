@@ -33,6 +33,7 @@ public class SearchViewModel extends ViewModel {
     @Inject
     SearchViewModel(RepoRepository repoRepository) {
         nextPageHandler = new NextPageHandler(repoRepository);
+        // TODO
 //        results = Transformations.switchMap(query, search -> {
 //            if (search == null || search.trim().length() == 0) {
 //                return AbsentLiveData.create();
@@ -107,7 +108,7 @@ public class SearchViewModel extends ViewModel {
             }
             unregister();
             this.query = query;
-// TODO            nextPageLiveData =
+//            nextPageLiveData = repository.search()
             loadMoreState.setValue(new LoadMoreState(true, null));
             nextPageLiveData.observeForever(this);
         }

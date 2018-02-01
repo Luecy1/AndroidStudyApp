@@ -44,10 +44,12 @@ public class RepoRepository {
     }
 
     public LiveData<Resource<List<Repo>>> loadRepos(String owner) {
+        // TODO
         return null;
     }
 
     public LiveData<Resource<Repo>> loadRepo(String owner, String name) {
+        // TODO
         return null;
     }
 

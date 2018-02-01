@@ -83,7 +83,19 @@ public class ApiResponse<T> {
     }
 
     public Integer getNextPage() {
-        // TODO
-        return null;
+        String next = links.get(NEXT_LINK);
+        if (next == null) {
+            return null;
+        }
+        Matcher matcher = PAGE_PATTERN.matcher(next);
+        if (!matcher.find() || matcher.groupCount() != 1) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(matcher.group(1));
+        } catch (NumberFormatException ex) {
+            Timber.w("can not parse next page %s",next);
+            return null;
+        }
     }
 }

@@ -8,6 +8,7 @@ import com.github.luecy1.androidstudyapp.api.GithubService;
 import com.github.luecy1.androidstudyapp.db.GithubDb;
 import com.github.luecy1.androidstudyapp.db.RepoDao;
 import com.github.luecy1.androidstudyapp.db.UserDao;
+import com.github.luecy1.androidstudyapp.util.LiveDataCallAdapterFactory;
 
 import javax.inject.Singleton;
 
@@ -29,7 +30,7 @@ public class AppModule {
         return new Retrofit.Builder()
                 .baseUrl("https://api.github.com/")
                 .addConverterFactory(GsonConverterFactory.create())
-                // TODO
+                .addCallAdapterFactory(new LiveDataCallAdapterFactory())
                 .build()
                 .create(GithubService.class);
     }
