@@ -35,7 +35,7 @@ public class RateLimiter<KEY> {
         return SystemClock.uptimeMillis();
     }
 
-    private synchronized void reset(KEY key) {
+    public synchronized void reset(KEY key) {
         timestamps.remove(key);
     }
 }

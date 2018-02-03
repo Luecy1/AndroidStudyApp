@@ -2,8 +2,10 @@ package com.github.luecy1.androidstudyapp.ui.common;
 
 import android.annotation.SuppressLint;
 import android.databinding.ViewDataBinding;
+import android.os.AsyncTask;
 import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
@@ -36,8 +38,6 @@ public abstract class DataBoundListAdapter<T, V extends ViewDataBinding>
         holder.binding.executePendingBindings();
     }
 
-    protected abstract void bind(V binding, T item);
-
     @SuppressLint("StaticFieldLeak")
     @MainThread
     public void replace(List<T> update) {
@@ -48,11 +48,67 @@ public abstract class DataBoundListAdapter<T, V extends ViewDataBinding>
             }
             items = update;
             notifyDataSetChanged();
+        } else if (update == null) {
+            int oldSize = items.size();
+            items = null;
+            notifyItemRangeRemoved(0, oldSize);
+        } else {
+            final int startVersion = dataVersion;
+            final List<T> oldItems = items;
+            new AsyncTask<Void, Void, DiffUtil.DiffResult>() {
+                @Override
+                protected DiffUtil.DiffResult doInBackground(Void... voids) {
+                    return DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                        @Override
+                        public int getOldListSize() {
+                            return oldItems.size();
+                        }
+
+                        @Override
+                        public int getNewListSize() {
+                            return update.size();
+                        }
+
+                        @Override
+                        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                            T oldItem = oldItems.get(oldItemPosition);
+                            T newItem = update.get(newItemPosition);
+                            return DataBoundListAdapter.this.areItemsTheSame(oldItem, newItem);
+                        }
+
+                        @Override
+                        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                            T oldItem = oldItems.get(oldItemPosition);
+                            T newItem = update.get(newItemPosition);
+                            return DataBoundListAdapter.this.areContentsTheSame(oldItem, newItem);
+                        }
+                    });
+                }
+
+                @Override
+                protected void onPostExecute(DiffUtil.DiffResult diffResult) {
+                    if (startVersion != dataVersion) {
+                        // ignore update
+                        return;
+                    }
+                    items = update;
+                    diffResult.dispatchUpdatesTo(DataBoundListAdapter.this);
+
+                }
+
+            }.execute();
+
         }
     }
 
+    protected abstract void bind(V binding, T item);
+
+    protected abstract boolean areItemsTheSame(T oldItem, T newItem);
+
+    protected abstract boolean areContentsTheSame(T oldItem, T newItem);
+
     @Override
     public int getItemCount() {
-        return 0;
+        return items == null ? 0 : items.size();
     }
 }

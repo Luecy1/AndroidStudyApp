@@ -1,13 +1,21 @@
 package com.github.luecy1.androidstudyapp.repository;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Transformations;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.github.luecy1.androidstudyapp.AppExecutors;
+import com.github.luecy1.androidstudyapp.api.ApiResponse;
 import com.github.luecy1.androidstudyapp.api.GithubService;
+import com.github.luecy1.androidstudyapp.api.RepoSearchResponse;
 import com.github.luecy1.androidstudyapp.db.GithubDb;
 import com.github.luecy1.androidstudyapp.db.RepoDao;
+import com.github.luecy1.androidstudyapp.util.AbsentLiveData;
 import com.github.luecy1.androidstudyapp.util.RateLimiter;
+import com.github.luecy1.androidstudyapp.vo.Contributor;
 import com.github.luecy1.androidstudyapp.vo.Repo;
+import com.github.luecy1.androidstudyapp.vo.RepoSearchResult;
 import com.github.luecy1.androidstudyapp.vo.Resource;
 
 import java.util.List;
@@ -31,7 +39,7 @@ public class RepoRepository {
 
     private final AppExecutors appExecutors;
 
-    private RateLimiter<String> repoListLimit = new RateLimiter<>(10, TimeUnit.MINUTES);
+    private RateLimiter<String> repoListRateLimit = new RateLimiter<>(10, TimeUnit.MINUTES);
 
 
     @Inject
@@ -44,8 +52,34 @@ public class RepoRepository {
     }
 
     public LiveData<Resource<List<Repo>>> loadRepos(String owner) {
-        // TODO
-        return null;
+        return new NetworkBoundResource<List<Repo>, List<Repo>>(appExecutors) {
+            @Override
+            protected void saveCallResult(@NonNull List<Repo> item) {
+                repoDao.insertRepos(item);
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable List<Repo> data) {
+                return data == null || data.isEmpty() || repoListRateLimit.shouldFetch(owner);
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<List<Repo>> loadFromDb() {
+                return repoDao.loadRepositories(owner);
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<List<Repo>>> createCall() {
+                return githubService.getRepos(owner);
+            }
+
+            @Override
+            protected void onFetchFailed() {
+                repoListRateLimit.reset(owner);
+            }
+        }.asLiveData();
     }
 
     public LiveData<Resource<Repo>> loadRepo(String owner, String name) {
@@ -54,8 +88,61 @@ public class RepoRepository {
     }
 
 
-    public LiveData<Resource<Repo>> search(String query) {
+    public LiveData<Resource<List<Contributor>>> loadContributors(String owner, String name) {
         // TODO
         return null;
+    }
+
+    public LiveData<Resource<List<Repo>>> search(String query) {
+        return new NetworkBoundResource<List<Repo>, RepoSearchResponse>(appExecutors) {
+
+            @Override
+            protected void saveCallResult(@NonNull RepoSearchResponse item) {
+                List<Integer> repoIds = item.getRepoIds();
+                RepoSearchResult repoSearchResult = new RepoSearchResult(
+                        query, repoIds, item.getTotal(), item.getNextPage()
+                );
+                db.beginTransaction();
+                try {
+                    repoDao.insertRepos(item.getItems());
+                    repoDao.insert(repoSearchResult);
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable List<Repo> data) {
+                return data == null;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<List<Repo>> loadFromDb() {
+                return Transformations.switchMap(repoDao.search(query), searchData -> {
+                    if (searchData == null) {
+                        return AbsentLiveData.create();
+                    } else {
+                        return repoDao.loadOrderd(searchData.repoIds);
+                    }
+                });
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<RepoSearchResponse>> createCall() {
+                return githubService.searchRepos(query);
+            }
+
+            @Override
+            protected RepoSearchResponse processResponse(ApiResponse<RepoSearchResponse> response) {
+                RepoSearchResponse body = response.body;
+                if (body != null) {
+                    body.setNextPage(response.getNextPage());
+                }
+                return body;
+            }
+        }.asLiveData();
     }
 }

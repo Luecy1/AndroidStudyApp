@@ -3,12 +3,14 @@ package com.github.luecy1.androidstudyapp.ui.search;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.github.luecy1.androidstudyapp.repository.RepoRepository;
+import com.github.luecy1.androidstudyapp.util.AbsentLiveData;
 import com.github.luecy1.androidstudyapp.vo.Repo;
 import com.github.luecy1.androidstudyapp.vo.Resource;
 
@@ -33,15 +35,13 @@ public class SearchViewModel extends ViewModel {
     @Inject
     SearchViewModel(RepoRepository repoRepository) {
         nextPageHandler = new NextPageHandler(repoRepository);
-        // TODO
-//        results = Transformations.switchMap(query, search -> {
-//            if (search == null || search.trim().length() == 0) {
-//                return AbsentLiveData.create();
-//            } else {
-//                return repoRepository.search(search);
-//            }
-//        });
-        results = null;
+        results = Transformations.switchMap(query, search -> {
+            if (search == null || search.trim().length() == 0) {
+                return AbsentLiveData.create();
+            } else {
+                return repoRepository.search(search);
+            }
+        });
     }
 
     @VisibleForTesting
@@ -54,8 +54,30 @@ public class SearchViewModel extends ViewModel {
         if (Objects.equals(input, query.getValue())) {
             return;
         }
-
+        nextPageHandler.reset();
         query.setValue(input);
+    }
+
+    @VisibleForTesting
+    public LiveData<LoadMoreState> getLoadMoreStatus() {
+//        return nextPageHandler.getLoadMoreState();
+        // TODO
+        return null;
+    }
+
+    @VisibleForTesting
+    public void loadNextPage() {
+        String value = query.getValue();
+        if (value == null || value.trim().length() == 0) {
+            return;
+        }
+        nextPageHandler.queryNextPage(value);
+    }
+
+    void refresh() {
+        if (query.getValue() != null) {
+            query.setValue(query.getValue());
+        }
     }
 
     static class LoadMoreState {
@@ -99,7 +121,7 @@ public class SearchViewModel extends ViewModel {
         @VisibleForTesting
         NextPageHandler(RepoRepository repository) {
             this.repository = repository;
-
+            reset();
         }
 
         void queryNextPage(String query) {
@@ -108,7 +130,8 @@ public class SearchViewModel extends ViewModel {
             }
             unregister();
             this.query = query;
-//            nextPageLiveData = repository.search()
+            // TODO
+//            nextPageLiveData = repository
             loadMoreState.setValue(new LoadMoreState(true, null));
             nextPageLiveData.observeForever(this);
         }
@@ -116,7 +139,7 @@ public class SearchViewModel extends ViewModel {
         @Override
         public void onChanged(@Nullable Resource<Boolean> result) {
             if (result == null) {
-
+                reset();
             } else {
                 switch (result.status) {
                     case SUCCESS:
