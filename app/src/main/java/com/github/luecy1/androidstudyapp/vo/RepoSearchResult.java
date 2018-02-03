@@ -18,18 +18,15 @@ public class RepoSearchResult {
     @NonNull
     public final String query;
     public final List<Integer> repoIds;
-    public final int totalCOunt;
-
+    public final int totalCount;
     @Nullable
     public final Integer next;
 
-    public RepoSearchResult(@NonNull String query,
-                            List<Integer> reoiIds,
-                            int totalCOunt,
+    public RepoSearchResult(@NonNull String query, List<Integer> repoIds, int totalCount,
                             @Nullable Integer next) {
         this.query = query;
-        this.repoIds = reoiIds;
-        this.totalCOunt = totalCOunt;
+        this.repoIds = repoIds;
+        this.totalCount = totalCount;
         this.next = next;
     }
 }

@@ -11,8 +11,8 @@ import com.github.luecy1.androidstudyapp.vo.User;
 /**
  * Created by you on 2018/01/30.
  */
-@Database(entities = {User.class, Repo.class, Contributor.class, RepoSearchResult.class},
-        version = 3)
+@Database(entities = {User.class, Repo.class, Contributor.class,
+        RepoSearchResult.class}, version = 3, exportSchema = false)
 public abstract class GithubDb extends RoomDatabase {
 
     abstract public UserDao userDao();
