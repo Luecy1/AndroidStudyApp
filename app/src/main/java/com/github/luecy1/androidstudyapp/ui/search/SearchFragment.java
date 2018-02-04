@@ -8,6 +8,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -124,20 +125,19 @@ public class SearchFragment extends Fragment implements Injectible {
             binding.get().executePendingBindings();
         });
 
-//        searchViewModel.getLoadMoreStatus().observe(this, loadingMore -> {
-//            if (loadingMore == null) {
-//                binding.get().setLoadingMore(false);
-//            } else {
-//                binding.get().setLoadingMore(loadingMore.isRunning());
-//                String error = loadingMore.getErrorMessageIfNotHandled();
-//                if (error != null) {
-//                    Snackbar.make(binding.get().loadMoreBar, error, Snackbar.LENGTH_LONG).show();
-//                }
-//
-//            }
-//            binding.get().executePendingBindings();
-//        });
-        // TODO
+        searchViewModel.getLoadMoreStatus().observe(this, loadingMore -> {
+            if (loadingMore == null) {
+                binding.get().setLoadingMore(false);
+            } else {
+                binding.get().setLoadingMore(loadingMore.isRunning());
+                String error = loadingMore.getErrorMessageIfNotHandled();
+                if (error != null) {
+                    Snackbar.make(binding.get().loadMoreBar, error, Snackbar.LENGTH_LONG).show();
+                }
+
+            }
+            binding.get().executePendingBindings();
+        });
     }
 
     private void dismissKeyboard(IBinder windowToken) {

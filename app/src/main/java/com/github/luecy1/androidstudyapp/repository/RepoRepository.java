@@ -83,14 +83,44 @@ public class RepoRepository {
     }
 
     public LiveData<Resource<Repo>> loadRepo(String owner, String name) {
-        // TODO
-        return null;
+        return new NetworkBoundResource<Repo, Repo>(appExecutors) {
+
+            @Override
+            protected void saveCallResult(@NonNull Repo item) {
+                repoDao.insert(item);
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable Repo data) {
+                return data == null;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<Repo> loadFromDb() {
+                return repoDao.load(owner, name);
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<Repo>> createCall() {
+                return githubService.getRepo(owner, name);
+            }
+        }.asLiveData();
     }
 
 
     public LiveData<Resource<List<Contributor>>> loadContributors(String owner, String name) {
         // TODO
         return null;
+    }
+
+    public LiveData<Resource<Boolean>> searchNextPage(String query) {
+        FetchNextSearchPageTask fetchNextSearchPageTask = new FetchNextSearchPageTask(
+                query, githubService, db
+        );
+        appExecutors.networkIo().execute(fetchNextSearchPageTask);
+        return fetchNextSearchPageTask.getLiveData();
     }
 
     public LiveData<Resource<List<Repo>>> search(String query) {

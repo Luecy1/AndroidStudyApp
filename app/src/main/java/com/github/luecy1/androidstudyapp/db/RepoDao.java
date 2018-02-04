@@ -35,7 +35,7 @@ public abstract class RepoDao {
     public abstract long createRepoIfNotExsits(Repo repo);
 
     @Query("SELECT * FROM repo WHERE owner_login = :login AND name = :name")
-    public abstract List<Repo> load(String login, String name);
+    public abstract LiveData<Repo> load(String login, String name);
 
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Query("SELECT login, avatarUrl, repoName, repoOwner, contributions FROM contributor "

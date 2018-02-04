@@ -60,9 +60,7 @@ public class SearchViewModel extends ViewModel {
 
     @VisibleForTesting
     public LiveData<LoadMoreState> getLoadMoreStatus() {
-//        return nextPageHandler.getLoadMoreState();
-        // TODO
-        return null;
+        return nextPageHandler.getLoadMoreState();
     }
 
     @VisibleForTesting
@@ -130,8 +128,7 @@ public class SearchViewModel extends ViewModel {
             }
             unregister();
             this.query = query;
-            // TODO
-//            nextPageLiveData = repository
+            nextPageLiveData = repository.searchNextPage(query);
             loadMoreState.setValue(new LoadMoreState(true, null));
             nextPageLiveData.observeForever(this);
         }
