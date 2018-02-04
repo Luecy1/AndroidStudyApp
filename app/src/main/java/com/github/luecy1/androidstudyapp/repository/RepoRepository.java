@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import timber.log.Timber;
+
 /**
  * Created by you on 2018/01/28.
  */
@@ -111,8 +113,45 @@ public class RepoRepository {
 
 
     public LiveData<Resource<List<Contributor>>> loadContributors(String owner, String name) {
-        // TODO
-        return null;
+        return new NetworkBoundResource<List<Contributor>, List<Contributor>>(appExecutors) {
+
+            @Override
+            protected void saveCallResult(@NonNull List<Contributor> contributors) {
+                for (Contributor contributor : contributors) {
+                    contributor.setRepoName(name);
+                    contributor.setRepoOwner(owner);
+                }
+                db.beginTransaction();
+                try {
+                    repoDao.createRepoIfNotExsits(new Repo(Repo.UNKNOWN_ID,
+                            name, owner + "/" + name, "",
+                            new Repo.Owner(owner, null), 0));
+                    repoDao.insertContributes(contributors);
+                    db.endTransaction();
+                } finally {
+                    db.endTransaction();
+                }
+                Timber.d("rece saved contibutors to db");
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable List<Contributor> data) {
+                Timber.d("rece contributor list from db : %s", data);
+                return data == null || data.isEmpty();
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<List<Contributor>> loadFromDb() {
+                return repoDao.loadContributors(owner, name);
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<List<Contributor>>> createCall() {
+                return githubService.getContributors(owner, name);
+            }
+        }.asLiveData();
     }
 
     public LiveData<Resource<Boolean>> searchNextPage(String query) {
