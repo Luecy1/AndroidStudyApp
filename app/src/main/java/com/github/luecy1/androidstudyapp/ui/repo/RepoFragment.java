@@ -5,13 +5,19 @@ import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingComponent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.github.luecy1.androidstudyapp.binding.FragmentDataBindingComponent;
+import com.github.luecy1.androidstudyapp.databinding.RepoFragmentBinding;
 import com.github.luecy1.androidstudyapp.di.Injectible;
 import com.github.luecy1.androidstudyapp.ui.common.NavigationController;
+import com.github.luecy1.androidstudyapp.util.AutoClearedValue;
 import com.github.luecy1.androidstudyapp.vo.Repo;
 import com.github.luecy1.androidstudyapp.vo.Resource;
 
@@ -37,9 +43,9 @@ public class RepoFragment extends Fragment implements LifecycleRegistryOwner, In
     @Inject
     NavigationController navigationController;
 
-    android.databinding.DataBindingComponent dataBindingComponent = new FragmentDataBindingComponent(this);
-    //   AutoCloseable<>
-    //   AutoCloseable<>
+    DataBindingComponent dataBindingComponent = new FragmentDataBindingComponent(this);
+    AutoClearedValue<RepoFragmentBinding> binding;
+//    AutoClearedValue<>
     //TODO
 
     @Override
@@ -61,5 +67,31 @@ public class RepoFragment extends Fragment implements LifecycleRegistryOwner, In
         }
         LiveData<Resource<Repo>> repo = repoViewModel.getRepo();
         // TODO
+    }
+
+    private void initContributorList(RepoViewModel viewModel) {
+        viewModel.getContributors().observe(this, listResource -> {
+
+            if (listResource != null && listResource.data != null) {
+
+            } else {
+
+            }
+        });
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    public static RepoFragment create(String owner, String name) {
+        RepoFragment repoFragment = new RepoFragment();
+        Bundle args = new Bundle();
+        args.putString(REPO_OWNER_KEY, owner);
+        args.putString(REPO_NAME_KEY, name);
+        repoFragment.setArguments(args);
+        return repoFragment;
     }
 }
