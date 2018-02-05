@@ -16,12 +16,12 @@ import java.util.Objects;
  * Created by you on 2018/02/05.
  */
 
-public class ContributorAdaptor extends DataBoundListAdapter<Contributor, ContributorItemBinding> {
+public class ContributorAdapter extends DataBoundListAdapter<Contributor, ContributorItemBinding> {
 
     private final DataBindingComponent dataBindingComponent;
     private final ContributorClickCallback callback;
 
-    public ContributorAdaptor(DataBindingComponent dataBindingComponent,
+    public ContributorAdapter(DataBindingComponent dataBindingComponent,
                               ContributorClickCallback callback) {
         this.dataBindingComponent = dataBindingComponent;
         this.callback = callback;
@@ -58,7 +58,7 @@ public class ContributorAdaptor extends DataBoundListAdapter<Contributor, Contri
                 && oldItem.getContributions() == newItem.getContributions();
     }
 
-    private interface ContributorClickCallback {
+    public interface ContributorClickCallback {
         void onClick(Contributor contributor);
     }
 }

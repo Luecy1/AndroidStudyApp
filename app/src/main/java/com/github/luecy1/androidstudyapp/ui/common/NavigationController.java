@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 
 import com.github.luecy1.androidstudyapp.MainActivity;
 import com.github.luecy1.androidstudyapp.R;
+import com.github.luecy1.androidstudyapp.ui.repo.RepoFragment;
 import com.github.luecy1.androidstudyapp.ui.search.SearchFragment;
 
 import javax.inject.Inject;
@@ -31,7 +32,12 @@ public class NavigationController {
     }
 
     public void navigateToRepo(String owner, String name) {
-        //TODO
+        RepoFragment repoFragment = RepoFragment.create(owner, name);
+        String tag = "repo" + "/" + owner + "/" + name;
+        fragmentManager.beginTransaction()
+                .replace(containerId, repoFragment, tag)
+                .addToBackStack(null)
+                .commitAllowingStateLoss();
     }
 
     public void navigateToUser(String login) {
