@@ -127,7 +127,6 @@ public class RepoRepository {
                             name, owner + "/" + name, "",
                             new Repo.Owner(owner, null), 0));
                     repoDao.insertContributes(contributors);
-                    db.endTransaction();
                 } finally {
                     db.endTransaction();
                 }
