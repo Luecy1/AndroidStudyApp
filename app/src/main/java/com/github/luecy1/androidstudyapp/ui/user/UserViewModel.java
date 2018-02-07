@@ -14,13 +14,13 @@ import com.github.luecy1.androidstudyapp.vo.Resource;
 import com.github.luecy1.androidstudyapp.vo.User;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
 /**
  * Created by you on 2018/02/07.
  */
-// TODO
 public class UserViewModel extends ViewModel {
 
     @VisibleForTesting
@@ -45,5 +45,30 @@ public class UserViewModel extends ViewModel {
                return repoRepository.loadRepos(login);
            }
         });
+    }
+
+    @VisibleForTesting
+    public void setLogin(String login) {
+        if (Objects.equals(this.login.getValue(), login)) {
+            return;
+        }
+        this.login.setValue(login);
+    }
+
+    @VisibleForTesting
+    public LiveData<Resource<User>> getUser() {
+        return user;
+    }
+
+    @VisibleForTesting
+    public LiveData<Resource<List<Repo>>> getRepositories() {
+        return repositories;
+    }
+
+    @VisibleForTesting
+    public void retry() {
+        if (this.login.getValue() != null) {
+            this.login.setValue(this.login.getValue());
+        }
     }
 }
