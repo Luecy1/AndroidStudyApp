@@ -2,6 +2,7 @@ package com.github.luecy1.androidstudyapp.di;
 
 import com.github.luecy1.androidstudyapp.ui.repo.RepoFragment;
 import com.github.luecy1.androidstudyapp.ui.search.SearchFragment;
+import com.github.luecy1.androidstudyapp.ui.user.UserFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -16,7 +17,9 @@ public abstract class FragmentBuildersModule {
     abstract RepoFragment contibuteRepoFragment();
 
     @ContributesAndroidInjector
+    abstract UserFragment contributeUserFragment();
+
+    @ContributesAndroidInjector
     abstract SearchFragment contributeSearchFragment();
 
-    // TODO
 }

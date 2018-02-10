@@ -39,7 +39,7 @@ public class ContributorAdapter extends DataBoundListAdapter<Contributor, Contri
                 callback.onClick(contributor);
             }
         });
-        return null;
+        return binding;
     }
 
     @Override

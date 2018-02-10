@@ -7,6 +7,7 @@ import com.github.luecy1.androidstudyapp.MainActivity;
 import com.github.luecy1.androidstudyapp.R;
 import com.github.luecy1.androidstudyapp.ui.repo.RepoFragment;
 import com.github.luecy1.androidstudyapp.ui.search.SearchFragment;
+import com.github.luecy1.androidstudyapp.ui.user.UserFragment;
 
 import javax.inject.Inject;
 
@@ -41,6 +42,11 @@ public class NavigationController {
     }
 
     public void navigateToUser(String login) {
-        // TODO
+        String tag = "user" + "/" + login;
+        UserFragment userFragment = UserFragment.create(login);
+        fragmentManager.beginTransaction()
+                .replace(containerId, userFragment, tag)
+                .addToBackStack(null)
+                .commitAllowingStateLoss();
     }
 }

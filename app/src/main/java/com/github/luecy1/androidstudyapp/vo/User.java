@@ -16,7 +16,7 @@ public class User {
     @NonNull
     public final String login;
 
-    @SerializedName("avater_url")
+    @SerializedName("avatar_url")
     public final String avatarUrl;
 
     @SerializedName("name")

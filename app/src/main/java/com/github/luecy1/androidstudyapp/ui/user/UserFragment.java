@@ -1,6 +1,7 @@
 package com.github.luecy1.androidstudyapp.ui.user;
 
 import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingComponent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -24,7 +25,6 @@ import javax.inject.Inject;
 /**
  * Created by you on 2018/02/07.
  */
-// TODO
 public class UserFragment extends Fragment implements Injectible {
 
     private static final String LOGIN_KEY = "login";
@@ -42,6 +42,14 @@ public class UserFragment extends Fragment implements Injectible {
     AutoClearedValue<UserFragmentBinding> binding;
     private AutoClearedValue<RepoListAdapter> adapter;
 
+    public static UserFragment create(String login) {
+        UserFragment userFragment = new UserFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(LOGIN_KEY, login);
+        userFragment.setArguments(bundle);
+        return userFragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -52,5 +60,30 @@ public class UserFragment extends Fragment implements Injectible {
         return databinding.getRoot();
     }
 
-    // TODO
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        userViewModel = ViewModelProviders.of(this, viewModelFactory).get(UserViewModel.class);
+        userViewModel.setLogin(getArguments().getString(LOGIN_KEY));
+        userViewModel.getUser().observe(this, userResource -> {
+            binding.get().setUser(userResource == null ? null : userResource.data);
+            binding.get().setUserResource(userResource);
+            binding.get().executePendingBindings();
+        });
+        RepoListAdapter rvAdapter = new RepoListAdapter(dataBindingComponent, false,
+                repo -> navigationController.navigateToRepo(repo.owner.login, repo.name));
+        binding.get().repoList.setAdapter(rvAdapter);
+        this.adapter = new AutoClearedValue<>(this, rvAdapter);
+        initRepoList();
+    }
+
+    private void initRepoList() {
+        userViewModel.getRepositories().observe(this, repos -> {
+            if (repos == null) {
+                adapter.get().replace(null);
+            } else {
+                adapter.get().replace(repos.data);
+            }
+        });
+    }
 }

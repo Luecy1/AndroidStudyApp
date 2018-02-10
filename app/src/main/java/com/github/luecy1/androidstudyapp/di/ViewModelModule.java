@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProvider;
 
 import com.github.luecy1.androidstudyapp.ui.repo.RepoViewModel;
 import com.github.luecy1.androidstudyapp.ui.search.SearchViewModel;
+import com.github.luecy1.androidstudyapp.ui.user.UserViewModel;
 import com.github.luecy1.androidstudyapp.viewmodel.GithubViewModelFactory;
 
 import dagger.Binds;
@@ -17,7 +18,10 @@ import dagger.multibindings.IntoMap;
 @Module
 public abstract class ViewModelModule {
 
-    // TODO
+    @Binds
+    @IntoMap
+    @ViewModelKey(UserViewModel.class)
+    abstract ViewModel bindUserViewModel(UserViewModel userViewModel);
 
     @Binds
     @IntoMap

@@ -30,7 +30,7 @@ public class RepoViewModel extends ViewModel {
     private final LiveData<Resource<List<Contributor>>> contributors;
 
     @Inject
-    public RepoViewModel(final RepoRepository repository) {
+    public RepoViewModel(RepoRepository repository) {
         this.repoId = new MutableLiveData<>();
         repo = Transformations.switchMap(repoId, input ->{
             if (input.isEmpty()) {
