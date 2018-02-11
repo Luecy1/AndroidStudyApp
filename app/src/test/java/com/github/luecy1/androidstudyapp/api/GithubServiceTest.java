@@ -3,12 +3,23 @@ package com.github.luecy1.androidstudyapp.api;
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import com.github.luecy1.androidstudyapp.util.LiveDataCallAdapterFactory;
+import com.github.luecy1.androidstudyapp.vo.Contributor;
+import com.github.luecy1.androidstudyapp.vo.Repo;
 import com.github.luecy1.androidstudyapp.vo.User;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -28,15 +39,17 @@ import static org.junit.Assert.assertThat;
  * Created by you on 2018/02/10.
  */
 
-// TODO
+@RunWith(JUnit4.class)
 public class GithubServiceTest {
 
+    @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     private GithubService service;
 
     private MockWebServer mockWebServer;
 
+    @Before
     public void createService() throws IOException {
         mockWebServer = new MockWebServer();
         service = new Retrofit.Builder()
@@ -47,16 +60,18 @@ public class GithubServiceTest {
                 .create(GithubService.class);
     }
 
+    @After
     public void stopService() throws IOException {
         mockWebServer.shutdown();
     }
 
+    @Test
     public void getUser() throws IOException, InterruptedException {
         enqueueResponse("user-yigit.json");
         User yigit = getValue(service.getUser("yigit")).body;
 
         RecordedRequest request = mockWebServer.takeRequest();
-        assertThat(request.getPath(), is("users/yigit"));
+        assertThat(request.getPath(), is("/users/yigit"));
 
         assertThat(yigit, notNullValue());
         assertThat(yigit.avatarUrl, is("https://avatars3.githubusercontent.com/u/89202?v=3"));
@@ -64,25 +79,67 @@ public class GithubServiceTest {
         assertThat(yigit.blog, is("birbit.com"));
     }
 
+    @Test
     public void getRepos() throws IOException, InterruptedException {
-        //todo
+        enqueueResponse("repos-yigit.json");
+        List<Repo> repos = getValue(service.getRepos("yigit")).body;
+
+        RecordedRequest request = mockWebServer.takeRequest();
+        assertThat(request.getPath(), is("/users/yigit/repos"));
+
+        assertThat(repos.size(), is(2));
+
+        Repo repo = repos.get(0);
+        assertThat(repo.fullName, is("yigit/AckMate"));
+
+        Repo.Owner owner = repo.owner;
+        assertThat(owner, notNullValue());
+        assertThat(owner.login, is("yigit"));
+        assertThat(owner.url, is("https://api.github.com/users/yigit"));
+
+        Repo repo2 = repos.get(1);
+        assertThat(repo2.fullName, is("yigit/android-architecture"));
     }
 
+    @Test
     public void getContributors() throws IOException, InterruptedException {
-        //todo
+        enqueueResponse("contributors.json");
+        List<Contributor> contributors = getValue(
+                service.getContributors("foo", "bar")).body;
+        assertThat(contributors.size(), is(3));
+        Contributor yigit = contributors.get(0);
+        assertThat(yigit.getLogin(), is("yigit"));
+        assertThat(yigit.getAvatarUrl(), is("https://avatars3.githubusercontent.com/u/89202?v=3"));
+        assertThat(yigit.getContributions(), is(291));
+        assertThat(contributors.get(1).getLogin(), is("guavabot"));
+        assertThat(contributors.get(2).getLogin(), is("coltin"));
     }
 
+    @Test
     public void search() throws IOException, InterruptedException {
-        //todo
+        String header =  "<https://api.github.com/search/repositories?q=foo&page=2>; rel=\"next\","
+                + " <https://api.github.com/search/repositories?q=foo&page=34>; rel=\"last\"";
+        Map<String, String> headers = new HashMap<>();
+        headers.put("link", header);
+        enqueueResponse("search.json", headers);
+        ApiResponse<RepoSearchResponse> response = getValue(
+                service.searchRepos("foo"));
+
+        assertThat(response, notNullValue());
+        assertThat(response.body.getTotal(), is(41));
+        assertThat(response.body.getItems().size(), is(30));
+        assertThat(response.links.get("next"),
+                is("https://api.github.com/search/repositories?q=foo&page=2"));
+        assertThat(response.getNextPage(), is(2));
     }
 
     private void enqueueResponse(String filename) throws IOException {
         enqueueResponse(filename, Collections.emptyMap());
     }
 
-    private void enqueueResponse(String filename, Map<String, String> headers) throws IOException {
+    private void enqueueResponse(String fileName, Map<String, String> headers) throws IOException {
         InputStream inputStream = getClass().getClassLoader()
-                .getResourceAsStream("api-response/" + filename);
+                .getResourceAsStream("api-response/" + fileName);
         BufferedSource source = Okio.buffer(Okio.source(inputStream));
         MockResponse mockResponse = new MockResponse();
         for (Map.Entry<String, String> header : headers.entrySet()) {
