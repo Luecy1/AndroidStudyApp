@@ -17,7 +17,7 @@ public class ApiUtil {
 
     public static <T> LiveData<ApiResponse<T>> createCall(Response<T> response) {
         MutableLiveData<ApiResponse<T>> data = new MutableLiveData<>();
-        data.setValue(new ApiResponse<T>(response));
+        data.setValue(new ApiResponse<>(response));
         return data;
     }
 }

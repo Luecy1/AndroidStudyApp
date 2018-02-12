@@ -52,13 +52,13 @@ public class CountingAppExecutors {
                 if (taskCount == 0) {
                     return;
                 }
-            }
-            long now = System.currentTimeMillis();
-            long remaining = end - now;
-            if (remaining > 0) {
-                LOCK.wait(remaining);
-            } else {
-                throw new TimeoutException("could not drain tasks");
+                long now = System.currentTimeMillis();
+                long remaining = end - now;
+                if (remaining > 0) {
+                    LOCK.wait(remaining);
+                } else {
+                    throw new TimeoutException("could not drain tasks");
+                }
             }
         }
     }
@@ -68,6 +68,7 @@ public class CountingAppExecutors {
         private final Executor delegate = Executors.newSingleThreadExecutor();
 
         private final Runnable increment;
+
         private final Runnable decrement;
 
         public CountingExecutor(Runnable increment, Runnable decrement) {

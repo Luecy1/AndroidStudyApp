@@ -29,7 +29,7 @@ public class Resource<T> {
     }
 
     public static <T> Resource<T> error(String msg, @Nullable T data) {
-        return new Resource<T>(Status.ERROR, data, msg);
+        return new Resource<>(Status.ERROR, data, msg);
     }
 
     public static <T> Resource<T> loading(@Nullable T data) {
