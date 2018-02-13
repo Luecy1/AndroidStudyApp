@@ -13,6 +13,7 @@ import com.github.luecy1.androidstudyapp.db.RepoDao;
 import com.github.luecy1.androidstudyapp.util.InstantAppExecutors;
 import com.github.luecy1.androidstudyapp.vo.Contributor;
 import com.github.luecy1.androidstudyapp.vo.Repo;
+import com.github.luecy1.androidstudyapp.vo.RepoSearchResult;
 import com.github.luecy1.androidstudyapp.vo.Resource;
 
 import org.junit.Before;
@@ -23,6 +24,8 @@ import org.junit.runners.JUnit4;
 import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,6 +34,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -136,5 +140,32 @@ public class RepoRepositoryTest {
         Observer<Resource<Boolean>> observer = mock(Observer.class);
         repository.searchNextPage("foo").observeForever(observer);
         verify(observer).onChanged(null);
+    }
+
+    @Test
+    public void search_fromDb() {
+        List<Integer> ids = Arrays.asList(1, 2);
+
+        Observer<Resource<List<Repo>>> observer = mock(Observer.class);
+        MutableLiveData<RepoSearchResult> dbSearchResult = new MutableLiveData<>();
+        MutableLiveData<List<Repo>> repositories = new MutableLiveData<>();
+
+        when(dao.search("foo")).thenReturn(dbSearchResult);
+
+        repository.search("foo").observeForever(observer);
+
+        verify(observer).onChanged(Resource.loading(null));
+        verifyNoMoreInteractions(service);
+        reset(observer);
+
+        RepoSearchResult dbResult = new RepoSearchResult("foo", ids, 2, null);
+        when(dao.loadOrderd(ids)).thenReturn(repositories);
+
+        dbSearchResult.postValue(dbResult);
+
+        List<Repo> repoList = new ArrayList<>();
+        repositories.postValue(repoList);
+        verify(observer).onChanged(Resource.success(repoList));
+        verifyNoMoreInteractions(service);
     }
 }
