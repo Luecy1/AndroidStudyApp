@@ -129,4 +129,12 @@ public class RepoRepositoryTest {
         updatedDbData.setValue(contributors);
         verify(observer).onChanged(Resource.success(contributors));
     }
+
+    @Test
+    public void searchNextPage_null() {
+        when(dao.findSerchResult("foo")).thenReturn(null);
+        Observer<Resource<Boolean>> observer = mock(Observer.class);
+        repository.searchNextPage("foo").observeForever(observer);
+        verify(observer).onChanged(null);
+    }
 }
