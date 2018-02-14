@@ -8,6 +8,7 @@ import android.arch.lifecycle.Observer;
 import com.github.luecy1.androidstudyapp.TestUtil;
 import com.github.luecy1.androidstudyapp.api.ApiResponse;
 import com.github.luecy1.androidstudyapp.api.GithubService;
+import com.github.luecy1.androidstudyapp.api.RepoSearchResponse;
 import com.github.luecy1.androidstudyapp.db.GithubDb;
 import com.github.luecy1.androidstudyapp.db.RepoDao;
 import com.github.luecy1.androidstudyapp.util.InstantAppExecutors;
@@ -29,8 +30,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import retrofit2.Response;
+
 import static com.github.luecy1.androidstudyapp.util.ApiUtil.successCall;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -38,7 +43,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by you on 2018/02/12.
@@ -164,6 +168,48 @@ public class RepoRepositoryTest {
         dbSearchResult.postValue(dbResult);
 
         List<Repo> repoList = new ArrayList<>();
+        repositories.postValue(repoList);
+        verify(observer).onChanged(Resource.success(repoList));
+        verifyNoMoreInteractions(service);
+    }
+
+    @Test
+    public void search_fromServer() {
+        List<Integer> ids = Arrays.asList(1, 2);
+        Repo repo1 = TestUtil.createRepo(1, "owner", "repo 1", "desc 1");
+        Repo repo2 = TestUtil.createRepo(2, "owner", "repo 2", "desc 2");
+
+        Observer<Resource<List<Repo>>> observer = mock(Observer.class);
+        MutableLiveData<RepoSearchResult> dbSearchResult = new MutableLiveData<>();
+        MutableLiveData<List<Repo>> repositories = new MutableLiveData<>();
+
+        RepoSearchResponse apiResponse = new RepoSearchResponse();
+        List<Repo> repoList = Arrays.asList(repo1, repo2);
+        apiResponse.setItems(repoList);
+        apiResponse.setTotal(2);
+
+        MutableLiveData<ApiResponse<RepoSearchResponse>> callLiveData = new MutableLiveData<>();
+        when(service.searchRepos("foo")).thenReturn(callLiveData);
+
+        when(dao.search("foo")).thenReturn(dbSearchResult);
+
+        repository.search("foo").observeForever(observer);
+
+        verify(observer).onChanged(Resource.loading(null));
+        verifyNoMoreInteractions(service);
+        reset(observer);
+
+        when(dao.loadOrderd(ids)).thenReturn(repositories);
+        dbSearchResult.postValue(null);
+        verify(dao, never()).loadOrderd(anyObject());
+
+        verify(service).searchRepos("foo");
+        MutableLiveData<RepoSearchResult> updateResult = new MutableLiveData<>();
+        when(dao.search("foo")).thenReturn(updateResult);
+        updateResult.postValue(new RepoSearchResult("foo", ids, 2, null));
+
+        callLiveData.postValue(new ApiResponse<>(Response.success(apiResponse)));
+        verify(dao).insertRepos(repoList);
         repositories.postValue(repoList);
         verify(observer).onChanged(Resource.success(repoList));
         verifyNoMoreInteractions(service);
