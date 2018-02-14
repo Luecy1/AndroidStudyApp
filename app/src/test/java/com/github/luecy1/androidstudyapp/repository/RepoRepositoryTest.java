@@ -11,6 +11,7 @@ import com.github.luecy1.androidstudyapp.api.GithubService;
 import com.github.luecy1.androidstudyapp.api.RepoSearchResponse;
 import com.github.luecy1.androidstudyapp.db.GithubDb;
 import com.github.luecy1.androidstudyapp.db.RepoDao;
+import com.github.luecy1.androidstudyapp.util.AbsentLiveData;
 import com.github.luecy1.androidstudyapp.util.InstantAppExecutors;
 import com.github.luecy1.androidstudyapp.vo.Contributor;
 import com.github.luecy1.androidstudyapp.vo.Repo;
@@ -213,5 +214,20 @@ public class RepoRepositoryTest {
         repositories.postValue(repoList);
         verify(observer).onChanged(Resource.success(repoList));
         verifyNoMoreInteractions(service);
+    }
+
+    @Test
+    public void search_fromServer_error() {
+        // TODO
+//        when(dao.search("foo")).thenReturn(AbsentLiveData.create());
+//        MutableLiveData<ApiResponse<RepoSearchResponse>> apiResponse = new MutableLiveData<>();
+//        when(service.searchRepos("foo")).thenReturn(apiResponse);
+//
+//        Observer<Resource<List<Repo>>> observer = mock(Observer.class);
+//        repository.search("foo").observeForever(observer);
+//        verify(observer).onChanged(Resource.loading(null));
+//
+//        apiResponse.postValue(new ApiResponse<>(new Exception("idk")));
+//        verify(observer).onChanged(Resource.error("idk", null));
     }
 }

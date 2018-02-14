@@ -25,7 +25,7 @@ public class Resource<T> {
     }
 
     public static <T> Resource<T> success(@Nullable T data) {
-        return new Resource<T>(Status.SUCCESS, data, null);
+        return new Resource<>(Status.SUCCESS, data, null);
     }
 
     public static <T> Resource<T> error(String msg, @Nullable T data) {
@@ -33,7 +33,7 @@ public class Resource<T> {
     }
 
     public static <T> Resource<T> loading(@Nullable T data) {
-        return new Resource<T>(Status.LOADING, data, null);
+        return new Resource<>(Status.LOADING, data, null);
     }
 
     @Override
