@@ -46,12 +46,12 @@ public class Resource<T> {
             return false;
         }
 
-        Resource<T> resource = (Resource<T>) o;
+        Resource<?> resource = (Resource<?>) o;
 
         if (status != resource.status) {
             return false;
         }
-        if (message != null ? message.equals(resource.message) : resource.message != null) {
+        if (message != null ? !message.equals(resource.message) : resource.message != null) {
             return false;
         }
         return data != null ? data.equals(resource.data) : resource.data == null;

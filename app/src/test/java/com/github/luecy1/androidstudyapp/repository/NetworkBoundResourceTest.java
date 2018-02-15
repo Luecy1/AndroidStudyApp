@@ -141,28 +141,28 @@ public class NetworkBoundResourceTest {
     }
 
 // todo
-//    @Test
-//    public void failureFromNetwork() {
-//        AtomicBoolean saved = new AtomicBoolean(false);
-//        shouldFetch = Objects::isNull;
-//        saveCallResult = foo -> {
-//            saved.set(true);
-//            return null;
-//        };
-//        ResponseBody body = ResponseBody.create(MediaType.parse("text/html"), "error");
-//        createCall = (aVoid) -> ApiUtil.createCall(Response.error(500, body));
-//
-//        Observer<Resource<Foo>> observer = Mockito.mock(Observer.class);
-//        networkBoundResource.asLiveData().observeForever(observer);
-//        drain();
-//        verify(observer).onChanged(Resource.loading(null));
-//        reset(observer);
-//        dbData.setValue(null);
-//        drain();
-//        assertThat(saved.get(), is(false));
-//        verify(observer).onChanged(Resource.error("error", null));
-//        verifyNoMoreInteractions(observer);
-//    }
+    @Test
+    public void failureFromNetwork() {
+        AtomicBoolean saved = new AtomicBoolean(false);
+        shouldFetch = Objects::isNull;
+        saveCallResult = foo -> {
+            saved.set(true);
+            return null;
+        };
+        ResponseBody body = ResponseBody.create(MediaType.parse("text/html"), "error");
+        createCall = (aVoid) -> ApiUtil.createCall(Response.error(500, body));
+
+        Observer<Resource<Foo>> observer = Mockito.mock(Observer.class);
+        networkBoundResource.asLiveData().observeForever(observer);
+        drain();
+        verify(observer).onChanged(Resource.loading(null));
+        reset(observer);
+        dbData.setValue(null);
+        drain();
+        assertThat(saved.get(), is(false));
+        verify(observer).onChanged(Resource.error("error", null));
+        verifyNoMoreInteractions(observer);
+    }
 
     @Test
     public void dbSuccessWithoutNetwork() {
