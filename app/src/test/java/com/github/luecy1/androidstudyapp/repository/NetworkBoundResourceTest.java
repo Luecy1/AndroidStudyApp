@@ -140,7 +140,6 @@ public class NetworkBoundResourceTest {
         verify(observer).onChanged(Resource.success(fetchedDbValue));
     }
 
-// todo
     @Test
     public void failureFromNetwork() {
         AtomicBoolean saved = new AtomicBoolean(false);

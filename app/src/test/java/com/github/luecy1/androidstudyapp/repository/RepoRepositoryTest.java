@@ -48,7 +48,6 @@ import static org.mockito.Mockito.when;
 /**
  * Created by you on 2018/02/12.
  */
-// TODO
 @SuppressWarnings("unchecked")
 @RunWith(JUnit4.class)
 public class RepoRepositoryTest {
@@ -218,7 +217,6 @@ public class RepoRepositoryTest {
 
     @Test
     public void search_fromServer_error() {
-        // TODO
         when(dao.search("foo")).thenReturn(AbsentLiveData.create());
         MutableLiveData<ApiResponse<RepoSearchResponse>> apiResponse = new MutableLiveData<>();
         when(service.searchRepos("foo")).thenReturn(apiResponse);
