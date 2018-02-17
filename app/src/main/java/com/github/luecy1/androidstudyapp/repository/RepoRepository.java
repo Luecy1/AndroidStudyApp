@@ -123,7 +123,7 @@ public class RepoRepository {
                 }
                 db.beginTransaction();
                 try {
-                    repoDao.createRepoIfNotExsits(new Repo(Repo.UNKNOWN_ID,
+                    repoDao.createRepoIfNotExists(new Repo(Repo.UNKNOWN_ID,
                             name, owner + "/" + name, "",
                             new Repo.Owner(owner, null), 0));
                     repoDao.insertContributes(contributors);

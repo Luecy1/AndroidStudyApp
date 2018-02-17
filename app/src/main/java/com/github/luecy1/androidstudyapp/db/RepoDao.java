@@ -32,7 +32,7 @@ public abstract class RepoDao {
     public abstract void insertRepos(List<Repo> repositories);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    public abstract long createRepoIfNotExsits(Repo repo);
+    public abstract long createRepoIfNotExists(Repo repo);
 
     @Query("SELECT * FROM repo WHERE owner_login = :login AND name = :name")
     public abstract LiveData<Repo> load(String login, String name);

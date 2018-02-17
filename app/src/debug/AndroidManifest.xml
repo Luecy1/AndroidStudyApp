@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.github.luecy1.androidstudyapp">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <application>
+        <activity android:name=".testing.SingleFragmentActivity">
+        </activity>
+    </application>
+
+</manifest>
