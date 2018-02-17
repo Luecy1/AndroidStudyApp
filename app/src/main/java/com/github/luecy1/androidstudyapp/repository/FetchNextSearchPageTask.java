@@ -66,7 +66,7 @@ public class FetchNextSearchPageTask implements Runnable {
                 }
                 liveData.postValue(Resource.success(apiResponse.getNextPage() != null));
             } else {
-                liveData.postValue(Resource.error(apiResponse.errorMessage, false));
+                liveData.postValue(Resource.error(apiResponse.errorMessage, true));
             }
         } catch (IOException e) {
             liveData.postValue(Resource.error(e.getMessage(), true));

@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 
 import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -33,7 +35,6 @@ import static org.mockito.Mockito.when;
 /**
  * Created by you on 2018/02/15.
  */
-// TODO
 public class FetchNextSearchPageTaskTest {
 
     @Rule
@@ -93,6 +94,42 @@ public class FetchNextSearchPageTaskTest {
         task.run();
         verify(repoDao).insertRepos(repos);
         verify(observer).onChanged(Resource.success(false));
+    }
+
+    @Test
+    public void nextPageWithMore() throws IOException {
+        createDbResult(1);
+        RepoSearchResponse result = new RepoSearchResponse();
+        result.setTotal(10);
+        List<Repo> repos = TestUtil.createRepos(10, "a", "b", "c");
+        result.setItems(repos);
+        result.setNextPage(2);
+        Call<RepoSearchResponse> call = createCall(result, 2);
+        when(service.searchRepos("foo", 1)).thenReturn(call);
+        task.run();
+        verify(repoDao).insertRepos(repos);
+        verify(observer).onChanged(Resource.success(true));
+    }
+
+    @Test
+    public void nextPageApiError() throws IOException {
+        createDbResult(1);
+        Call<RepoSearchResponse> call = mock(Call.class);
+        when(call.execute()).thenReturn(Response.error(400, ResponseBody.create(
+                MediaType.parse("txt"), "bar")));
+        when(service.searchRepos("foo", 1)).thenReturn(call);
+        task.run();
+        verify(observer).onChanged(Resource.error("bar", true));
+    }
+
+    @Test
+    public void nextPageIOError() throws IOException {
+        createDbResult(1);
+        Call<RepoSearchResponse> call = mock(Call.class);
+        when(call.execute()).thenThrow(new IOException("bar"));
+        when(service.searchRepos("foo", 1)).thenReturn(call);
+        task.run();
+        verify(observer).onChanged(Resource.error("bar", true));
     }
 
     private Call<RepoSearchResponse> createCall(RepoSearchResponse body, Integer nextPage) throws IOException {
