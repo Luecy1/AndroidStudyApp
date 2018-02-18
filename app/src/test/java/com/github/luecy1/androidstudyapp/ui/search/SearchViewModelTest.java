@@ -21,6 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -28,7 +29,6 @@ import static org.mockito.Mockito.when;
 /**
  * Created by you on 2018/02/18.
  */
-// TODO
 @RunWith(JUnit4.class)
 public class SearchViewModelTest {
 
@@ -90,5 +90,30 @@ public class SearchViewModelTest {
         assertThat(nextPage.hasActiveObservers(), is(false));
         verify(repository).search("bar");
         verify(repository, never()).searchNextPage("bar");
+    }
+
+    @Test
+    public void refresh() {
+        viewModel.refresh();
+        verifyNoMoreInteractions(repository);
+        viewModel.setQuery("foo");
+        viewModel.refresh();
+        verifyNoMoreInteractions(repository);
+        viewModel.getResults().observeForever(mock(Observer.class));
+        verify(repository).search("foo");
+        reset(repository);
+        viewModel.refresh();
+        verify(repository).search("foo");
+    }
+
+    @Test
+    public void resetSameQuery() {
+        viewModel.getResults().observeForever(mock(Observer.class));
+        viewModel.setQuery("foo");
+        reset(repository);
+        viewModel.setQuery("FOO");
+        verifyNoMoreInteractions(repository);
+        viewModel.setQuery("bar");
+        verify(repository).search("bar");
     }
 }
