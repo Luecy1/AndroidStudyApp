@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatcher;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +32,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Created by you on 2018/02/19.
  */
-// TODO
 @RunWith(JUnit4.class)
 public class RepoViewModelTest {
 
@@ -126,5 +124,16 @@ public class RepoViewModelTest {
         reset(repository);
         repoViewModel.retry();
         verify(repository).loadRepo("foo", "bar");
+    }
+
+    @Test
+    public void nullRepoId() {
+        repoViewModel.setId(null, null);
+        Observer<Resource<Repo>> observer1 = mock(Observer.class);
+        Observer<Resource<List<Contributor>>> observer2 = mock(Observer.class);
+        repoViewModel.getRepo().observeForever(observer1);
+        repoViewModel.getContributors().observeForever(observer2);
+        verify(observer1).onChanged(null);
+        verify(observer2).onChanged(null);
     }
 }
