@@ -14,6 +14,7 @@ import com.github.luecy1.androidstudyapp.vo.Resource;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Observer;
 
 import javax.inject.Inject;
 
@@ -83,6 +84,30 @@ public class RepoViewModel extends ViewModel {
 
         boolean isEmpty() {
             return owner == null || name == null || owner.length() == 0 || name.length() == 0;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            RepoId repoId = (RepoId) o;
+
+            if (owner != null ? !owner.equals(repoId.owner) : repoId.owner != null) {
+                return false;
+            }
+            return name != null ? name.equals(repoId.name) : repoId.name == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = owner != null ? owner.hashCode() : 0;
+            result = 31 * result + (name != null ? name.hashCode() : 0);
+            return result;
         }
     }
 }
