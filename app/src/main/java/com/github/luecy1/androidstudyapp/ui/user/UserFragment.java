@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import com.github.luecy1.androidstudyapp.R;
 import com.github.luecy1.androidstudyapp.binding.FragmentDataBindingComponent;
 import com.github.luecy1.androidstudyapp.databinding.UserFragmentBinding;
-import com.github.luecy1.androidstudyapp.di.Injectible;
+import com.github.luecy1.androidstudyapp.di.Injectable;
 import com.github.luecy1.androidstudyapp.ui.common.NavigationController;
 import com.github.luecy1.androidstudyapp.ui.common.RepoListAdapter;
 import com.github.luecy1.androidstudyapp.util.AutoClearedValue;
@@ -25,7 +25,7 @@ import javax.inject.Inject;
 /**
  * Created by you on 2018/02/07.
  */
-public class UserFragment extends Fragment implements Injectible {
+public class UserFragment extends Fragment implements Injectable {
 
     private static final String LOGIN_KEY = "login";
 

@@ -23,7 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.github.luecy1.androidstudyapp.R;
 import com.github.luecy1.androidstudyapp.binding.FragmentDataBindingComponent;
 import com.github.luecy1.androidstudyapp.databinding.FragmentSearchBinding;
-import com.github.luecy1.androidstudyapp.di.Injectible;
+import com.github.luecy1.androidstudyapp.di.Injectable;
 import com.github.luecy1.androidstudyapp.ui.common.NavigationController;
 import com.github.luecy1.androidstudyapp.ui.common.RepoListAdapter;
 import com.github.luecy1.androidstudyapp.util.AutoClearedValue;
@@ -31,7 +31,7 @@ import com.github.luecy1.androidstudyapp.util.AutoClearedValue;
 import javax.inject.Inject;
 
 
-public class SearchFragment extends Fragment implements Injectible {
+public class SearchFragment extends Fragment implements Injectable {
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;

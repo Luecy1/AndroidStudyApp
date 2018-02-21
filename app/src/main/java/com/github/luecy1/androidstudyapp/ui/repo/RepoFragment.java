@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import com.github.luecy1.androidstudyapp.R;
 import com.github.luecy1.androidstudyapp.binding.FragmentDataBindingComponent;
 import com.github.luecy1.androidstudyapp.databinding.RepoFragmentBinding;
-import com.github.luecy1.androidstudyapp.di.Injectible;
+import com.github.luecy1.androidstudyapp.di.Injectable;
 import com.github.luecy1.androidstudyapp.ui.common.NavigationController;
 import com.github.luecy1.androidstudyapp.util.AutoClearedValue;
 import com.github.luecy1.androidstudyapp.vo.Repo;
@@ -30,7 +30,7 @@ import javax.inject.Inject;
 /**
  * Created by you on 2018/01/28.
  */
-public class RepoFragment extends Fragment implements LifecycleRegistryOwner, Injectible {
+public class RepoFragment extends Fragment implements Injectable {
 
     private final static String REPO_OWNER_KEY = "repo_owner";
 
