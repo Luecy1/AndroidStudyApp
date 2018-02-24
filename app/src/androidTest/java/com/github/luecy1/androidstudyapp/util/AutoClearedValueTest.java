@@ -3,6 +3,7 @@ package com.github.luecy1.androidstudyapp.util;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 
 import com.github.luecy1.androidstudyapp.testing.SingleFragmentActivity;
@@ -13,18 +14,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 /**
  * Created by you on 2018/02/22.
  */
 @RunWith(AndroidJUnit4.class)
-// TODO 実行できない、週末に回す
 public class AutoClearedValueTest {
 
     @Rule
     public ActivityTestRule<SingleFragmentActivity> activityRule =
-            new ActivityTestRule<SingleFragmentActivity>(SingleFragmentActivity.class, true, true);
+            new ActivityTestRule<>(SingleFragmentActivity.class, true, true);
 
     private TestFragment testFragment;
 
@@ -36,14 +37,33 @@ public class AutoClearedValueTest {
     }
 
     @Test
-    public void clearOnReplace() {
+    public void clearOnReplace() throws Throwable {
         testFragment.testValue = new AutoClearedValue<>(testFragment, "foo");
         activityRule.getActivity().replaceFragment(new TestFragment());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         assertThat(testFragment.testValue.get(), nullValue());
     }
 
-    private static class TestFragment extends Fragment {
+    @Test
+    public void dontClearForChildFragment() throws Throwable {
+        testFragment.testValue = new AutoClearedValue<>(testFragment, "foo");
+        testFragment.getChildFragmentManager().beginTransaction()
+                .add(new Fragment(), "foo").commit();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(testFragment.testValue.get(), is("foo"));
+    }
+
+    @Test
+    public void dontClearForDialog() throws Throwable {
+        testFragment.testValue = new AutoClearedValue<>(testFragment, "foo");
+        DialogFragment dialogFragment = new DialogFragment();
+        dialogFragment.show(testFragment.getFragmentManager(), "dialog");
+        dialogFragment.dismiss();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertThat(testFragment.testValue.get(), is("foo"));
+    }
+
+    public static class TestFragment extends Fragment {
         AutoClearedValue<String> testValue;
     }
 }

@@ -20,7 +20,6 @@ import dagger.android.AndroidInjectionModule;
         AppModule.class,
         MainActivityModule.class
 })
-
 public interface AppComponent {
     @Component.Builder
     interface Builder {

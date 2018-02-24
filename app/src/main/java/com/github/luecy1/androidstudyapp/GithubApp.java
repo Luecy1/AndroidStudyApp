@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
+import timber.log.Timber;
 
 /**
  * Created by you on 2018/01/29.
@@ -24,6 +25,7 @@ public class GithubApp extends Application implements HasActivityInjector {
     public void onCreate() {
         super.onCreate();
         if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
         }
         AppInjector.init(this);
     }
