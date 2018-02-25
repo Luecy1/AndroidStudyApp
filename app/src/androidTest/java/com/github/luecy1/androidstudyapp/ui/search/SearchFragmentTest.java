@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by you on 2018/02/17.
  */
-// TODO　週末に回す
+@RunWith(AndroidJUnit4.class)
 public class SearchFragmentTest {
     @Rule
     public ActivityTestRule<SingleFragmentActivity> activityRule =
