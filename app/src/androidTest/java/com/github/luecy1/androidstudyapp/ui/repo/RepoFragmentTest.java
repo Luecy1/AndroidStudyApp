@@ -56,7 +56,7 @@ public class RepoFragmentTest {
     @Before
     public void init() {
         EspressoTestUtil.disableProgressBarAnimations(activityRule);
-        repoFragment = RepoFragment.create("a","b ");
+        repoFragment = RepoFragment.create("a", "b");
         viewModel = mock(RepoViewModel.class);
         fragmentBindingAdapters = mock(FragmentBindingAdapters.class);
         navigationController = mock(NavigationController.class);
