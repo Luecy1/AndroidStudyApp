@@ -1,6 +1,7 @@
 package com.github.luecy1.androidstudyapp.ui.repo;
 
 import android.arch.lifecycle.MutableLiveData;
+import android.databinding.DataBindingComponent;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.test.InstrumentationRegistry;
@@ -10,6 +11,7 @@ import android.support.test.runner.AndroidJUnit4;
 import com.github.luecy1.androidstudyapp.R;
 import com.github.luecy1.androidstudyapp.TestUtil;
 import com.github.luecy1.androidstudyapp.binding.FragmentBindingAdapters;
+import com.github.luecy1.androidstudyapp.binding.FragmentDataBindingComponent;
 import com.github.luecy1.androidstudyapp.testing.SingleFragmentActivity;
 import com.github.luecy1.androidstudyapp.ui.common.NavigationController;
 import com.github.luecy1.androidstudyapp.util.EspressoTestUtil;
@@ -31,6 +33,7 @@ import java.util.List;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -44,15 +47,14 @@ import static org.mockito.Mockito.when;
 /**
  * Created by you on 2018/02/24.
  */
-// TODO
 @RunWith(AndroidJUnit4.class)
 public class RepoFragmentTest {
 
     @Rule
     public ActivityTestRule<SingleFragmentActivity> activityRule =
-            new ActivityTestRule<SingleFragmentActivity>(SingleFragmentActivity.class, true);
+            new ActivityTestRule<>(SingleFragmentActivity.class, true, true);
     @Rule
-    public TaskExecutorWithIdlingResourceRule executorrule =
+    public TaskExecutorWithIdlingResourceRule executorRule =
             new TaskExecutorWithIdlingResourceRule();
     private MutableLiveData<Resource<Repo>> repo = new MutableLiveData<>();
     private MutableLiveData<Resource<List<Contributor>>> contributors = new MutableLiveData<>();
@@ -74,7 +76,13 @@ public class RepoFragmentTest {
         when(viewModel.getContributors()).thenReturn(contributors);
 
         repoFragment.viewModelFactory = ViewModelUtil.createFor(viewModel);
-        repoFragment.dataBindingComponent = () -> fragmentBindingAdapters;
+//        repoFragment.dataBindingComponent = () -> fragmentBindingAdapters;
+        repoFragment.dataBindingComponent = new DataBindingComponent() {
+            @Override
+            public FragmentBindingAdapters getFragmentBindingAdapters() {
+                return RepoFragmentTest.this.fragmentBindingAdapters;
+            }
+        };
         repoFragment.navigationController = navigationController;
         activityRule.getActivity().setFragment(repoFragment);
     }
@@ -121,7 +129,11 @@ public class RepoFragmentTest {
 
     @Test
     public void testContributors() {
-        //TODO
+        setContributors("aa", "bb");
+        onView(listMatcher().atPosition(0))
+                .check(matches(hasDescendant(withText("aa"))));
+        onView(listMatcher().atPosition(1))
+                .check(matches(hasDescendant(withText("bb"))));
     }
 
     @NonNull

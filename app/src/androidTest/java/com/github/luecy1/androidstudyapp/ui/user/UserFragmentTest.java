@@ -1,6 +1,7 @@
 package com.github.luecy1.androidstudyapp.ui.user;
 
 import android.arch.lifecycle.MutableLiveData;
+import android.databinding.DataBindingComponent;
 import android.support.annotation.NonNull;
 import android.support.test.rule.ActivityTestRule;
 import android.view.View;
@@ -47,7 +48,7 @@ public class UserFragmentTest {
 
     @Rule
     public ActivityTestRule<SingleFragmentActivity> activityRule =
-            new ActivityTestRule<SingleFragmentActivity>(SingleFragmentActivity.class, true, true);
+            new ActivityTestRule<>(SingleFragmentActivity.class, true, true);
 
     private UserViewModel viewModel;
     private NavigationController navigationController;
@@ -68,7 +69,13 @@ public class UserFragmentTest {
 
         fragment.viewModelFactory = ViewModelUtil.createFor(viewModel);
         fragment.navigationController = navigationController;
-        fragment.dataBindingComponent = () -> fragmentBindingAdapters;
+//        fragment.dataBindingComponent = () -> fragmentBindingAdapters;
+        fragment.dataBindingComponent = new DataBindingComponent(){
+            @Override
+            public FragmentBindingAdapters getFragmentBindingAdapters() {
+                return fragmentBindingAdapters;
+            }
+        };
 
         activityRule.getActivity().setFragment(fragment);
         activityRule.runOnUiThread(() -> fragment.binding.get().repoList.setItemAnimator(null));
