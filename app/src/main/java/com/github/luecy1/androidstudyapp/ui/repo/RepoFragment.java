@@ -1,6 +1,5 @@
 package com.github.luecy1.androidstudyapp.ui.repo;
 
-import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
@@ -26,16 +25,11 @@ import java.util.Collections;
 
 import javax.inject.Inject;
 
-/**
- * Created by you on 2018/01/28.
- */
 public class RepoFragment extends Fragment implements Injectable {
 
-    private final static String REPO_OWNER_KEY = "repo_owner";
+    private static final String REPO_OWNER_KEY = "repo_owner";
 
     private final static String REPO_NAME_KEY = "repo_name";
-
-    private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
@@ -50,19 +44,14 @@ public class RepoFragment extends Fragment implements Injectable {
     AutoClearedValue<ContributorAdapter> adapter;
 
     @Override
-    public LifecycleRegistry getLifecycle() {
-        return lifecycleRegistry;
-    }
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         repoViewModel = ViewModelProviders.of(this, viewModelFactory).get(RepoViewModel.class);
         Bundle args = getArguments();
-        if (args != null
-                && args.containsKey(REPO_OWNER_KEY)
-                && args.containsKey(REPO_NAME_KEY)) {
-            repoViewModel.setId(args.getString(REPO_OWNER_KEY), args.getString(REPO_NAME_KEY));
+        if (args != null && args.containsKey(REPO_OWNER_KEY) &&
+                args.containsKey(REPO_NAME_KEY)) {
+            repoViewModel.setId(args.getString(REPO_OWNER_KEY),
+                    args.getString(REPO_NAME_KEY));
         } else {
             repoViewModel.setId(null, null);
         }
@@ -82,10 +71,12 @@ public class RepoFragment extends Fragment implements Injectable {
 
     private void initContributorList(RepoViewModel viewModel) {
         viewModel.getContributors().observe(this, listResource -> {
-
+            // we don't need any null checks here for the adapter since LiveData guarantees that
+            // it won't call us if fragment is stopped or not started.
             if (listResource != null && listResource.data != null) {
                 adapter.get().replace(listResource.data);
             } else {
+                //noinspection ConstantConditions
                 adapter.get().replace(Collections.emptyList());
             }
         });
@@ -93,7 +84,8 @@ public class RepoFragment extends Fragment implements Injectable {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         RepoFragmentBinding dataBinding = DataBindingUtil
                 .inflate(inflater, R.layout.repo_fragment, container, false);
         dataBinding.setRetryCallback(() -> repoViewModel.retry());
