@@ -109,7 +109,7 @@ public class RepoFragmentTest {
     public void testError() throws InterruptedException {
         repo.postValue(Resource.error("foo", null));
         onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.retry)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.retry)).check(matches(isDisplayed()));
         onView(withId(R.id.retry)).perform(click());
         verify(viewModel).retry();
         repo.postValue(Resource.loading(null));

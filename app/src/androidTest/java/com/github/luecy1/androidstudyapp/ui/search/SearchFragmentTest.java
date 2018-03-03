@@ -36,6 +36,7 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.pressKey;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -96,14 +97,14 @@ public class SearchFragmentTest {
                 pressKey(KeyEvent.KEYCODE_ENTER));
         verify(viewModel).setQuery("foo");
         results.postValue(Resource.loading(null));
-        onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.progress_bar)).check(matches(isDisplayed()));
     }
 
     @Test
-    public void loadResult() {
+    public void loadResults() {
         Repo repo = TestUtil.createRepo("foo", "bar", "desc");
         results.postValue(Resource.loading(Arrays.asList(repo)));
-        onView(listMatcher().atPosition(49)).check(matches(isDisplayed()));
+        onView(listMatcher().atPosition(0)).check(matches(hasDescendant(withText("foo/bar"))));
         verify(viewModel).loadNextPage();
     }
 

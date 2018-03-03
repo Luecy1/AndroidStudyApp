@@ -24,7 +24,7 @@ public class UserDaoTest extends DbTest {
         db.userDao().insert(user);
 
         final User loaded = getValue(db.userDao().findByLogin(user.login));
-        assertThat(loaded, is("foo"));
+        assertThat(loaded.login, is("foo"));
 
         final User replacement = TestUtil.createUser("foo2");
         db.userDao().insert(replacement);
