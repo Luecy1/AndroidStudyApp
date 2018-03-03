@@ -14,7 +14,7 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class FragmentBuildersModule {
 
     @ContributesAndroidInjector
-    abstract RepoFragment contibuteRepoFragment();
+    abstract RepoFragment contributeRepoFragment();
 
     @ContributesAndroidInjector
     abstract UserFragment contributeUserFragment();

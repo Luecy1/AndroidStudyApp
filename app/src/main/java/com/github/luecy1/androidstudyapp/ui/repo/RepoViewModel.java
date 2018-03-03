@@ -14,7 +14,6 @@ import com.github.luecy1.androidstudyapp.vo.Resource;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Observer;
 
 import javax.inject.Inject;
 
@@ -33,7 +32,7 @@ public class RepoViewModel extends ViewModel {
     @Inject
     public RepoViewModel(RepoRepository repository) {
         this.repoId = new MutableLiveData<>();
-        repo = Transformations.switchMap(repoId, input ->{
+        repo = Transformations.switchMap(repoId, input -> {
             if (input.isEmpty()) {
                 return AbsentLiveData.create();
             }
